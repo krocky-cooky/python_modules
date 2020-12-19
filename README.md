@@ -3,9 +3,9 @@
 深層学習ライブラリであるneuralNetworkクラスを定義している。
 
 ## algorithm.py
-- KNeighborsClassifier
+- KNeighborsClassifier  
 k点近傍法でのクラス分類アルゴリズム
-- KMeans
+- KMeans  
 k平均法によるクラスタ分類のアルゴリズム
-- LinearMultipleRegression
+- LinearMultipleRegression  
 線形重回帰による予測のアルゴリズム
