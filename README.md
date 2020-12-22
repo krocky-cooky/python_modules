@@ -9,7 +9,7 @@ source ~/.bash_profile
 ### neural.py
 深層学習ライブラリであるneuralNetworkクラスを定義している。
 ```python
-from neural import neuralNetwork
+from ML import neuralNetwork
 
 net = neuralNetwork(
     epoch = 20000,
@@ -25,7 +25,7 @@ accuracy = net.accuracy(x_test,t_test)
 - KNeighborsClassifier  
 k点近傍法でのクラス分類アルゴリズム
 ```python
-from algorithm import KNeighborsClassifier
+from ML import KNeighborsClassifier
 
 clf = KNeighborsClassifier(n_neighbors = 4)
 clf.fit(x_train,t_train)
@@ -36,7 +36,7 @@ accuracy = KNeighborsClassifier.one_leave_out_accuracy(data,target,n_neighbors =
 - KMeans  
 k平均法によるクラスタ分類のアルゴリズム
 ```python
-from algorithm import KMeans
+from ML import KMeans
 clf = KMeans(n_clusters = 3)
 classify = clf.fit(data)
 
@@ -46,7 +46,7 @@ clf.visualize3D()
 - MultipleLinearRegression  
 線形重回帰による予測のアルゴリズム
 ```python
-from algorithm import MultipleLinearRegression
+from ML import MultipleLinearRegression
 
 lr = MultipleLinearRegression()
 lr.fit(x_train,t_train)
