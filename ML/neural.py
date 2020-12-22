@@ -84,6 +84,7 @@ class neuralNetwork:
         self.layers.append(output_layer)
 
         print('<< successfully layers are updated >>')
+	return self
     
     
 
