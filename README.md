@@ -5,7 +5,8 @@ git clone https://github.com/krocky-cooky/python_modules
 echo export PATH=$PATH:追加したいコマンド検索パス >> ~/.bash_profile
 source ~/.bash_profile
 ```
-## neural.py
+## ML
+### neural.py
 深層学習ライブラリであるneuralNetworkクラスを定義している。
 ```python
 from neural import neuralNetwork
@@ -20,7 +21,7 @@ net.train(x_train,t_train)
 accuracy = net.accuracy(x_test,t_test)
 ```
 
-## algorithm.py
+### algorithm.py
 - KNeighborsClassifier  
 k点近傍法でのクラス分類アルゴリズム
 ```python
