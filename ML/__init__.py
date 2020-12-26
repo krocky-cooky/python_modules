@@ -1,2 +1,2 @@
-from .neural import neuralNetwork
-from .algorithm import *
+from neural import neuralNetwork
+from algorithm import *
