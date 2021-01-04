@@ -6,7 +6,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'algorithm_module'))
 
 import matplotlib.pyplot as plt
 from functions import *
+from cluster import Shortest,Longest,Average,Ward
 from mpl_toolkits.mplot3d import Axes3D
+
 
 
 class KNeighborsClassifier:
@@ -253,3 +255,56 @@ class MultipleLinearRegression:
         score = r2_score(t,t_pred)
         return score
 
+class HierarchicClustering:
+    def __init__(self,metric = 'shortest'):
+        self.clusters = list()
+        self.cluster = None
+        self.log = list()
+        if metric == 'shortest':
+            self.cluster = Shortest
+        elif metric == 'longest':
+            self.cluster = Longest
+        elif metric == 'average':
+            self.cluster = Average
+        elif metric == 'ward':
+            self.cluster = Ward
+
+    def fit(self,data):
+        self.clusters = list()
+        self.size = data.shape[0]
+        self.index = self.size - 1
+        for i in range(self.size):
+            d = data[i]
+            c = self.cluster(d,i)
+            self.clusters.append(c)
+        
+        while self.size > 1:
+            distance_list = list()
+            for i in range(self.size-1):
+                for j in range(i+1,self.size):
+                    distance = self.clusters[i].distance(self.clusters[j])
+                    distance_list.append([distance,[i,j]])
+            
+            sorted_distance_list = sorted(distance_list,key=lambda x : x[0])
+            [a,b] = sorted_distance_list[0][1]
+            print('number of clusters : {} ,{} and {} are merged'.format(self.size,a,b))
+            self.index += 1
+            tmp_a = self.clusters[a].index
+            tmp_b = self.clusters[b].index
+            dist = self.clusters[a].merge(self.clusters[b],self.index)
+            self.log.append([
+                tmp_a,
+                tmp_b,
+                dist,
+                self.clusters[a].size
+            ])
+            tmp = self.clusters
+            self.clusters = tmp[:b] + tmp[b+1:]
+            self.size -= 1
+
+        self.result = np.array(self.log)
+        return self.result
+
+    def visualize(self):
+        dendrogram(self.result)
+        plt.show()
