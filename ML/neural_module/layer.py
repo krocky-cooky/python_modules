@@ -91,3 +91,6 @@ class inputLayer(Layer):
         self.input = input
         return input
 
+    def backward(self,delta):
+        return delta
+

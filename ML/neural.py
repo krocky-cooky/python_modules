@@ -111,8 +111,7 @@ class neuralNetwork:
 
     def backword_propagation(self,y,t):
         delta = self.loss_func.backward(y,t)
-        layers = self.layers[1:]
-        for layer in reversed(layers):
+        for layer in reversed(self.layers):
             delta = layer.backward(delta)
 
 
