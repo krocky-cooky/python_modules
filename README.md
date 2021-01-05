@@ -53,3 +53,21 @@ lr.fit(x_train,t_train)
 pred = lr.predict(x_test)
 score = lr.score(x_test,t_test)
 ```
+-HierarchicClustering
+階層的クラスタリングモデル
+```python
+from ML import HierarchicClustering as HC
+
+clf = HC(method = 'ward')
+clf.fit(data)
+clf.visualize()
+```
+-SoftmaxRegression
+ソフトマックス回帰モデルの予測アルゴリズム
+```python
+from ML import SoftmaxRegression
+
+rgr = SoftmaxRegression(iter = 100,learning_rate = 0.1)
+rgr.train(x_train,t_train)
+rgr.accuracy(x_test,t_test)
+
