@@ -274,3 +274,35 @@ class HierarchicClustering:
     def visualize(self):
         dendrogram(self.result)
         plt.show()
+
+class SoftmaxRegression:
+    def __init__(self,iter,learning_rate):
+        self.iter = iter
+        self.learning_rate = learning_rate
+
+    def train(self,data,target):
+        i_size = data.shape[1]
+        o_size = target.shape[1]
+        self.weight = np.zeros((i_size,o_size))
+        self.bias = np.zeros(o_size)
+        self.input = data
+        for i in range(self.iter):
+            p = self.predict(data)
+            d_weight = np.dot(self.input.T,(p-target))
+            self.weight -= self.learning_rate*d_weight
+            print(self.accuracy(data,target))
+
+    def predict(self,data):
+        p = np.dot(data,self.weight) + self.bias
+        c = np.max(p,axis=1,keepdims=True)
+        exp_p = np.exp(p-c)
+        sum_exp_p = np.sum(exp_p,axis = 1,keepdims=True)
+        out = exp_p/sum_exp_p
+        return out
+
+    def accuracy(self,data,target):
+        pred = self.predict(data)
+        pred = np.argmax(pred,axis=1)
+        target = np.argmax(target,axis = 1)
+        accuracy = np.sum(target == pred)/target.shape[0]
+        return accuracy
