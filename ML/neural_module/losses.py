@@ -11,7 +11,7 @@ class Loss:
 
 class SumSquare(Loss):
     def forward(self,y,t):
-        loss = np.sum((y-t)**2)/2
+        loss = np.sum((y-t)**2)/2/y.shape[0]
         return loss
 
     def backward(self,y,t):

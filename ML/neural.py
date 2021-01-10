@@ -18,7 +18,6 @@ class neuralNetwork:
             'hidden' : 'relu',
             'output' : 'identity'
         },
-        'optimize_initial_weight' : True,
     }
 
     def __init__(
@@ -28,6 +27,7 @@ class neuralNetwork:
         batch_size = 100,
         loss_func="square",
         optimizer = 'normal',
+        optimize_initial_weight = True,
         log_frequency = 100,
         mu = 0.5
     ):
@@ -44,6 +44,7 @@ class neuralNetwork:
         self.optimizer = optimizer
         self.trained = False
         self.SETTINGS = neuralNetwork.SETTINGS
+        self.optimize_initial_weight = optimize_initial_weight
 
         if loss_func == "square":
             self.loss_func = SumSquare()
@@ -71,8 +72,8 @@ class neuralNetwork:
                 input_size=former,
                 output_size=sz,
                 learning_rate=self.learning_rate,
-                activation=neuralNetwork.SETTINGS['activation']['hidden'],
-                optimize_initial_weight = neuralNetwork.SETTINGS['optimize_initial_weight'],
+                activation=self.SETTINGS['activation']['hidden'],
+                optimize_initial_weight = self.optimize_initial_weight,
                 optimizer = self.optimizer,
                 mu = self.mu
             )
@@ -82,9 +83,9 @@ class neuralNetwork:
         output_layer = hiddenAndOutputLayer(
             input_size=former,
             output_size=output_size,
-            activation=neuralNetwork.SETTINGS['activation']['output'],
+            activation=self.SETTINGS['activation']['output'],
             learning_rate=self.learning_rate,
-            optimize_initial_weight = neuralNetwork.SETTINGS['optimize_initial_weight'],
+            optimize_initial_weight = self.optimize_initial_weight,
             optimizer = self.optimizer,
             mu = self.mu
         )
@@ -109,69 +110,18 @@ class neuralNetwork:
         return res
     
 
-    def backword_propagation(self,y,t):
+    def backward_propagation(self,y,t):
         delta = self.loss_func.backward(y,t)
         for layer in reversed(self.layers):
             delta = layer.backward(delta)
 
 
     def train(self,x,t):
-        self.loss_list = list()
-        self.acc_list = list()
-        train_size = x.shape[0]
-        batch_size = self.batch_size
-        start = time.time()
-        for i in range(self.epoch):
-            batch = np.random.choice(train_size,batch_size)
-            x_batch = x[batch]
-            t_batch = t[batch]
-            y = self.predict(x_batch)
-            losses = self.loss(y,t_batch)
-            y_sub = np.argmax(y,axis = 1)
-            t_sub = np.argmax(t_batch,axis = 1)
-            acc = np.sum(y_sub == t_sub)/float(batch_size)
-            self.loss_list.append(losses)
-            self.acc_list.append(acc)
-            if i%self.log_freq == 0:
-                elapsed = time.time() - start
-                
-                '''
-                途中経過を表示
-                '''
-                word = '--------- epoch' + str(i) + ' ---------'
-                print(word)
-                print('loss : ' + str(losses))
-                print('accuracy : ' + str(acc))
-                print('time : {} [sec]'.format(elapsed))
-                word = '-'*len(word)
-                print(word + '\n')
-
-            self.backword_propagation(y,t_batch)
-
-        elapsed = time.time() - start
-        train_acc = self.accuracy(x,t)  
-        print('\n')
-        print('<< All training epochs ended. >>')
-
-        '''
-        トレーニングセットの正答率とトレーニングにかかった時間を結果として表示する。
-        '''
-        word = '========= result ========='
-        print(word)
-        print('Elapsed time : {} [sec]'.format(elapsed))
-        print('Train set accuracy : {}'.format(train_acc))
-        word = '='*len(word)
-        print(word)
-        self.trained = True
-        return (elapsed,train_acc)
+        pass
 
 
     def accuracy(self,x,t):
-        y = self.predict(x)
-        y_sub = np.argmax(y,axis=1)
-        t_sub = np.argmax(t,axis=1)
-        acc = np.sum(y_sub == t_sub)/float(y.shape[0])
-        return acc
+        pass
 
         
     def visualize(
@@ -345,3 +295,65 @@ class neuralNetwork:
         
         print('successfully network was constructed!')
         return net
+
+
+class Classification(neuralNetwork):
+
+
+    def train(self,x,t):
+        self.loss_list = list()
+        self.acc_list = list()
+        train_size = x.shape[0]
+        batch_size = self.batch_size
+        start = time.time()
+        for i in range(self.epoch):
+            batch = np.random.choice(train_size,batch_size)
+            x_batch = x[batch]
+            t_batch = t[batch]
+            y = self.predict(x_batch)
+            losses = self.loss(y,t_batch)
+            y_sub = np.argmax(y,axis = 1)
+            t_sub = np.argmax(t_batch,axis = 1)
+            acc = np.sum(y_sub == t_sub)/float(batch_size)
+            self.loss_list.append(losses)
+            self.acc_list.append(acc)
+            if i%self.log_freq == 0:
+                elapsed = time.time() - start
+                
+                '''
+                途中経過を表示
+                '''
+                word = '--------- epoch' + str(i) + ' ---------'
+                print(word)
+                print('loss : ' + str(losses))
+                print('accuracy : ' + str(acc))
+                print('time : {} [sec]'.format(elapsed))
+                word = '-'*len(word)
+                print(word + '\n')
+
+            self.backward_propagation(y,t_batch)
+
+        elapsed = time.time() - start
+        train_acc = self.accuracy(x,t)  
+        print('\n')
+        print('<< All training epochs ended. >>')
+
+        '''
+        トレーニングセットの正答率とトレーニングにかかった時間を結果として表示する。
+        '''
+        word = '========= result ========='
+        print(word)
+        print('Elapsed time : {} [sec]'.format(elapsed))
+        print('Train set accuracy : {}'.format(train_acc))
+        word = '='*len(word)
+        print(word)
+        self.trained = True
+        return (elapsed,train_acc)
+
+    def accuracy(self,x,t):
+        y = self.predict(x)
+        y_sub = np.argmax(y,axis=1)
+        t_sub = np.argmax(t,axis=1)
+        acc = np.sum(y_sub == t_sub)/float(y.shape[0])
+        return acc
+

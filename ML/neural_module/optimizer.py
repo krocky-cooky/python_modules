@@ -30,7 +30,7 @@ class Normal(Optimizer):
 
 class Momentum(Optimizer):
     def __init__(self,weight,bias,learning_rate,mu = None):
-        super()._init__(weight,bias,learning_rate,mu)
+        super().__init__(weight,bias,learning_rate,mu)
         self.delta_weight = np.zeros_like(self.weight)
         self.delta_bias = np.zeros_like(self.bias)
 
