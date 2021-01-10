@@ -3,6 +3,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'neural_module'))
 
 from losses import SumSquare,CrossEntropy
 from layer import hiddenAndOutputLayer,inputLayer
+from score import *
 
 import numpy as np
 import time
@@ -298,8 +299,6 @@ class neuralNetwork:
 
 
 class Classification(neuralNetwork):
-
-
     def train(self,x,t):
         self.loss_list = list()
         self.acc_list = list()
@@ -310,11 +309,8 @@ class Classification(neuralNetwork):
             batch = np.random.choice(train_size,batch_size)
             x_batch = x[batch]
             t_batch = t[batch]
-            y = self.predict(x_batch)
             losses = self.loss(y,t_batch)
-            y_sub = np.argmax(y,axis = 1)
-            t_sub = np.argmax(t_batch,axis = 1)
-            acc = np.sum(y_sub == t_sub)/float(batch_size)
+            acc = self.accuracy(x_batch,t_batch)
             self.loss_list.append(losses)
             self.acc_list.append(acc)
             if i%self.log_freq == 0:
@@ -356,4 +352,76 @@ class Classification(neuralNetwork):
         t_sub = np.argmax(t,axis=1)
         acc = np.sum(y_sub == t_sub)/float(y.shape[0])
         return acc
+
+class Regression(neuralNetwork):
+    def __init__(
+        self,
+        learning_rate = 0.1,
+        epoch = 20000,
+        batch_size = 100,
+        loss_func="square",
+        optimizer = 'normal',
+        optimize_initial_weight = True,
+        log_frequency = 100,
+        mu = 0.5,
+        accuracy_function = 'r2_score'
+    ):
+        super().__init__(
+            learning_rate,
+            epoch,
+            batch_size,
+            loss_func,
+            optimizer,
+            optimize_initial_weight,
+            log_frequency,
+            mu
+        )
+        self.ac_fun = accuracy_function
+        accuracy_functions = [
+            'r2_score',
+            'rmse',
+            'mae'
+        ]
+        if not accuracy_function in accuracy_functions:
+            raise Exception('精度関数が正しくありません')
+        
+
+    def train(self,data,target):
+        self.loss_list = list()
+        batch_size = self.batch_size
+        train_size = data.shape[0]
+        for i in range(self.epoch):
+            batch = np.random.choice(train_size,batch_size)
+            x_batch = data[batch]
+            t_batch = target[batch]
+            y = self.predict(x_batch)
+            loss = self.loss(y,t_batch)
+            acc = self.accuracy(y,t)
+            self.loss_list.append(loss)
+            self.acc_list.append(acc)
+
+            if i%self.log_freq == 0:
+                print('epoch:{} , accuracy:{} , loss:{}'.format(
+                    i+1,
+                    acc,
+                    loss
+                ))
+
+            self.backward_propagation(y,t_batch)
+            print('========= result ========')
+            print('accuracy : {}\nloss : {}'.format(
+                self.accuracy(data,target),
+                self.loss(data,target)
+            ))
+
+        
+    def accuracy(self,y,t):
+        if ac_fun == 'r2_score':
+            return r2_score(y,t)
+        elif as_fun == 'rmse':
+            return rmse(y,t)
+        elif as_fun == 'mae':
+            return mae(y,t)
+        
+
 
