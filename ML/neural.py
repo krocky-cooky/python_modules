@@ -386,17 +386,17 @@ class Regression(neuralNetwork):
             raise Exception('精度関数が正しくありません')
         
 
-    def train(self,data,target):
+    def train(self,x,t):
         self.loss_list = list()
         batch_size = self.batch_size
-        train_size = data.shape[0]
+        train_size = x.shape[0]
         for i in range(self.epoch):
             batch = np.random.choice(train_size,batch_size)
-            x_batch = data[batch]
-            t_batch = target[batch]
+            x_batch = x[batch]
+            t_batch = t[batch]
             y = self.predict(x_batch)
             loss = self.loss(y,t_batch)
-            acc = self.accuracy(y,t)
+            acc = self.accuracy(y,t_batch)
             self.loss_list.append(loss)
             self.acc_list.append(acc)
 
@@ -408,19 +408,20 @@ class Regression(neuralNetwork):
                 ))
 
             self.backward_propagation(y,t_batch)
-            print('========= result ========')
-            print('accuracy : {}\nloss : {}'.format(
-                self.accuracy(data,target),
-                self.loss(data,target)
-            ))
+
+        print('========= result ========')
+        print('accuracy : {}\nloss : {}'.format(
+            self.accuracy(self.predict(x),t),
+            self.loss(x,t)
+        ))
 
         
     def accuracy(self,y,t):
-        if ac_fun == 'r2_score':
+        if self.ac_fun == 'r2_score':
             return r2_score(y,t)
-        elif as_fun == 'rmse':
+        elif self.as_fun == 'rmse':
             return rmse(y,t)
-        elif as_fun == 'mae':
+        elif self.as_fun == 'mae':
             return mae(y,t)
         
 
