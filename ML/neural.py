@@ -14,13 +14,22 @@ import pickle
 
 
 class neuralNetwork:
-    SETTINGS = {
-        'activation' : {
-            'hidden' : 'relu',
-            'output' : 'identity'
-        },
+    CHOICE = {
+        'activation' : [
+            'relu',
+            'sigmoid',
+            'softmax',
+            'identity'
+        ],
+        'loss_func' : [
+            'square',
+            'cross_entropy'
+        ],
+        'optimizer' : [
+            'normal',
+            'momentum'
+        ]
     }
-
     def __init__(
         self,
         learning_rate = 0.1,
@@ -44,8 +53,11 @@ class neuralNetwork:
         self.mu = mu
         self.optimizer = optimizer
         self.trained = False
-        self.SETTINGS = neuralNetwork.SETTINGS
         self.optimize_initial_weight = optimize_initial_weight
+        self.activation = {
+            'hidden' : 'relu',
+            'output' : 'identity'
+        }
 
         if loss_func == "square":
             self.loss_func = SumSquare()
@@ -73,7 +85,7 @@ class neuralNetwork:
                 input_size=former,
                 output_size=sz,
                 learning_rate=self.learning_rate,
-                activation=self.SETTINGS['activation']['hidden'],
+                activation=self.activation['hidden'],
                 optimize_initial_weight = self.optimize_initial_weight,
                 optimizer = self.optimizer,
                 mu = self.mu
@@ -84,7 +96,7 @@ class neuralNetwork:
         output_layer = hiddenAndOutputLayer(
             input_size=former,
             output_size=output_size,
-            activation=self.SETTINGS['activation']['output'],
+            activation=self.activation['output'],
             learning_rate=self.learning_rate,
             optimize_initial_weight = self.optimize_initial_weight,
             optimizer = self.optimizer,
@@ -419,10 +431,7 @@ class Regression(neuralNetwork):
     def accuracy(self,y,t):
         if self.ac_fun == 'r2_score':
             return r2_score(y,t)
-        elif self.as_fun == 'rmse':
+        elif self.ac_fun == 'rmse':
             return rmse(y,t)
-        elif self.as_fun == 'mae':
+        elif self.ac_fun == 'mae':
             return mae(y,t)
-        
-
-

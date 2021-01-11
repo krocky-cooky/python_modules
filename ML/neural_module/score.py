@@ -17,6 +17,6 @@ def rmse(y,t):
 def mae(y,t):
     y_tmp = y.flatten()
     t_tmp = t.flatten()
-    return metrics.mean_absolute_error(y_obs, y_pred)
+    return metrics.mean_absolute_error(y_tmp, t_tmp)
 
 
