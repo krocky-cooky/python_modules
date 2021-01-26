@@ -6,8 +6,10 @@ struct Cluster{
     int n,index;
     vector<vector<float>> elem;
     vector<ClusterPair*> pairs;
+    vector<float> average;
     Cluster(vector<float> e ,int _id):n(1),index(_id){
         elem.push_back(e);
+        this->average = e;
     }
 
     
@@ -16,10 +18,12 @@ struct Cluster{
 struct ClusterPair{
     Cluster *a,*b;
     int index;
+    int method;
     float dist;
     bool active;
-    ClusterPair(Cluster* x,Cluster* y,int i):index(i){
+    ClusterPair(Cluster* x,Cluster* y,int i,int _method):index(i){
         this->dist = 0;
+        this->method = _method;
         this->a = x;
         this->b = y;
         this->recalc();
@@ -32,6 +36,9 @@ struct ClusterPair{
     }
     bool merge(int state){
         this->a->elem.insert(this->a->elem.end(),this->b->elem.begin(),this->b->elem.end());
+        for(int i = 0;i < this->a->average.size();++i){
+            this->a->average[i] = (this->a->average[i]*this->a->n + this->b->average[i]*this->b->n)/(float)(this->a->n + this->b->n);
+        }
         this->a->n += this->b->n;
         this->a->index = state;
         return true;
@@ -44,16 +51,40 @@ struct ClusterPair{
     }
 
     float distance(){
-        float ret = 0;
-        for(int i = 0;i < this->a->n;++i){
-            for(int j = 0;j < this->b->n;++j){
-                float cnt = 0;
-                for(int k = 0;k < this->a->elem[0].size();++k){
-                    cnt += (a->elem[i][k]-b->elem[j][k])*(a->elem[i][k]-b->elem[j][k]);
+        float ret = 1;
+        if(this->method == 0){
+            ret = 0;
+            for(int i = 0;i < this->a->n;++i){
+                for(int j = 0;j < this->b->n;++j){
+                    float cnt = 0;
+                    for(int k = 0;k < this->a->elem[0].size();++k){
+                        cnt += (a->elem[i][k]-b->elem[j][k])*(a->elem[i][k]-b->elem[j][k]);
+                    }
+                    cnt = sqrt(cnt);
+                    ret = max(ret,cnt);
                 }
-                cnt = sqrt(cnt);
-                ret = max(ret,cnt);
             }
+        }else if(this->method == 1){
+            ret = 1e10;
+            for(int i = 0;i < this->a->n;++i){
+                for(int j = 0;j < this->b->n;++j){
+                    float cnt = 0;
+                    for(int k = 0;k < this->a->elem[0].size();++k){
+                        cnt += (a->elem[i][k]-b->elem[j][k])*(a->elem[i][k]-b->elem[j][k]);
+                    }
+                    cnt = sqrt(cnt);
+                    ret = min(ret,cnt);
+                }
+            }
+        }
+        else if(this->method == 3){
+            ret = 0;
+            int sz = this->a->average.size();
+            for(int i = 0; i < sz; ++i){
+                ret += (this->a->average[i]-this->b->average[i])*(this->a->average[i]-this->b->average[i]);
+            }
+            ret *= (this->a->n*this->b->n)/(float)(this->a->n + this->b->n);
+            ret = sqrt(ret);
         }
         return ret;
     }
@@ -72,7 +103,7 @@ class Heap{
         vector<float>k;
         float debug3;
         vector<ClusterPair*> heap;
-        Heap(vector<vector<float>> input){
+        Heap(vector<vector<float>> input,int method){
             int sz = input.size();
             this->state = sz;
             this->d_size = input[0].size();
@@ -86,7 +117,7 @@ class Heap{
             int index = 1;
             for(int i = 0;i < sz-1;++i){
                 for(int j = i+1;j < sz;++j){
-                    ClusterPair* p = new ClusterPair(table[i],table[j],index);
+                    ClusterPair* p = new ClusterPair(table[i],table[j],index,method);
                     this->heap[index] = p;
                     table[i]->pairs.push_back(p);
                     table[j]->pairs.push_back(p);

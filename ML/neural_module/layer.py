@@ -1,11 +1,12 @@
 import os,sys
 sys.path.append(os.path.dirname(__file__))
+sys.path.remove('')
 
 import math
 import numpy as np
 import scipy as sp
 from activations import *
-from optimizer import Normal,Momentum
+from optimizer import Momentum,Normal
 
 
 

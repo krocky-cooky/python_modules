@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from functions import *
 from cluster import Shortest,Longest,Average,Ward
 from mpl_toolkits.mplot3d import Axes3D
+import heap
+from scipy.cluster.hierarchy import dendrogram
 
 
 
@@ -306,3 +308,26 @@ class SoftmaxRegression:
         target = np.argmax(target,axis = 1)
         accuracy = np.sum(target == pred)/target.shape[0]
         return accuracy
+
+class OptimizedHierarchicClustering:
+    def __init__(self,method = 'ward'):
+        dic = {
+            'longest' : 0,
+            'shortest' : 1,
+            'average' : 2,
+            'ward' : 3
+        }
+        self.method = dic[method]
+
+    def fit(self,data):
+        self.heap = heap.Heap(data,self.method)
+        self.result = list()
+        while self.heap.n > 0:
+            ret = self.heap.update()
+            self.result.append(ret)
+        
+        return self.result
+    
+    def visualize(self):
+        dendrogram(self.result)
+        plt.show()
