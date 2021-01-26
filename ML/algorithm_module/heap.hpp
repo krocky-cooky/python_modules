@@ -76,8 +76,20 @@ struct ClusterPair{
                     ret = min(ret,cnt);
                 }
             }
-        }
-        else if(this->method == 3){
+        }else if(this->method == 2){
+            ret = 0;
+            for(int i = 0;i < this->a->n;++i){
+                for(int j = 0;j < this->b->n;++j){
+                    float cnt = 0;
+                    for(int k = 0;k < this->a->elem[0].size();++k){
+                        cnt += (a->elem[i][k]-b->elem[j][k])*(a->elem[i][k]-b->elem[j][k]);
+                    }
+                    cnt = sqrt(cnt);
+                    ret += cnt;
+                }
+            }
+            ret /= (float)(this->a->n*this->b->n);
+        }else if(this->method == 3){
             ret = 0;
             int sz = this->a->average.size();
             for(int i = 0; i < sz; ++i){
