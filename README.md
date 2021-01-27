@@ -1,4 +1,4 @@
-# 自作pythonモジュール群
+# pythonモジュール群
 ## 利用方法
 ```sh
 git clone https://github.com/krocky-cooky/python_modules
