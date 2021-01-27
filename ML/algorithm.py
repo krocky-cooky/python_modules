@@ -318,16 +318,85 @@ class OptimizedHierarchicClustering:
             'ward' : 3
         }
         self.method = dic[method]
+        self.done = False
+        self.cmap = plt.get_cmap("tab10")
 
-    def fit(self,data):
+    def fit(self,data,class_num = -1):
+        self.data = data
         self.heap = heap.Heap(data,self.method)
         self.result = list()
-        while self.heap.n > 0:
+        while self.heap.size > 1:
             ret = self.heap.update()
             self.result.append(ret)
+            if self.heap.size == class_num:
+                self.classify = np.array(self.heap.getClassify())
+                self.done = True
+                print("got classificatin")
+        self.result = np.array(self.result)
         
         return self.result
     
-    def visualize(self):
+    def dendrogram(self):
         dendrogram(self.result)
+        plt.show()
+
+    def visualize(self,argx = 0,argy = 1,target = np.array([])):
+        if not self.done:
+            print('please fit a data')
+            return
+
+        if target.shape[0]:
+            classify = target
+            
+        else :
+            classify = self.classify
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.set_xlabel('argx : ' + str(argx))
+        ax.set_ylabel('argy : ' + str(argy))
+        for i in range(self.data.shape[0]):
+            mask = classify == i
+            scatter_x = self.data[mask][:,argx]
+            scatter_y = self.data[mask][:,argy]
+            ax.scatter(
+                scatter_x,
+                scatter_y,
+                s=30,
+                c=self.cmap(i)
+            )
+        #plt.savefig('{}-{}plot{}.png'.format(argx,argy,flag))
+        plt.show()
+
+    def visualize3D(self,argx = 0,argy = 1,argz = 2,target = np.array([])):
+        if not self.done:
+            print('please fit a data')
+            return
+
+        if target.shape[0]:
+            classify = target
+        else :
+            classify = self.classify
+
+        fig = plt.figure()
+        ax = Axes3D(fig)
+
+        ax.set_xlabel('argx : ' + str(argx))
+        ax.set_ylabel('argy : ' + str(argy))
+        ax.set_zlabel('argz : ' + str(argz))
+
+        for i in range(self.data.shape[0]):
+            mask = classify == i
+            scatter_x = self.data[mask][:,argx]
+            scatter_y = self.data[mask][:,argy]
+            scatter_z = self.data[mask][:,argz]
+            ax.scatter(
+                scatter_x,
+                scatter_y,
+                scatter_z,
+                s=30,
+                c=self.cmap(i)
+            )
+
+        #plt.savefig('{}-{}-{}plot{}.png'.format(argx,argy,argz,flag))
         plt.show()

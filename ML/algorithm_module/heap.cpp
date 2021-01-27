@@ -12,9 +12,9 @@ PYBIND11_MODULE(heap,m){
         .def(py::init<std::vector<std::vector<float>> , int>())
         .def_readwrite("n",&Heap::n)
         .def_readwrite("heap",&Heap::heap)
-        .def("shiftUp", &Heap::shiftUp)
-        .def("shiftDown",&Heap::shiftDown)
+        .def_readwrite("size",&Heap::size)
         .def("update",&Heap::update)
+        .def("getClassify",&Heap::getClassify)
         .def("judge",&Heap::judge);
 
 }

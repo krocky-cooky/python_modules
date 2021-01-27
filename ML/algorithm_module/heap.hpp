@@ -3,11 +3,13 @@ using namespace std;
 struct ClusterPair;
 
 struct Cluster{
-    int n,index;
+    int n,index,id;
+    vector<float> ids;
     vector<vector<float>> elem;
     vector<ClusterPair*> pairs;
     vector<float> average;
-    Cluster(vector<float> e ,int _id):n(1),index(_id){
+    Cluster(vector<float> e ,int _id):n(1),index(_id),id(_id){
+        this->ids.push_back(id);
         elem.push_back(e);
         this->average = e;
     }
@@ -36,6 +38,7 @@ struct ClusterPair{
     }
     bool merge(int state){
         this->a->elem.insert(this->a->elem.end(),this->b->elem.begin(),this->b->elem.end());
+        this->a->ids.insert(this->a->ids.end(),this->b->ids.begin(),this->b->ids.end());
         for(int i = 0;i < this->a->average.size();++i){
             this->a->average[i] = (this->a->average[i]*this->a->n + this->b->average[i]*this->b->n)/(float)(this->a->n + this->b->n);
         }
@@ -44,13 +47,13 @@ struct ClusterPair{
         return true;
     }
 
-    bool recalc(){
+    bool recalc(void){
         float tmp = this->dist;
         this->dist = this->distance();
         return this->dist > tmp;
     }
 
-    float distance(){
+    float distance(void){
         float ret = 1;
         if(this->method == 0){
             ret = 0;
@@ -105,11 +108,13 @@ struct ClusterPair{
 class Heap{
     private:
         int d_size;
+        int d_num;
        
 
     public:
         int n;
         int state;
+        int size;
         vector<vector<float>> debug;
         vector<float> debug2;
         vector<float>k;
@@ -117,8 +122,10 @@ class Heap{
         vector<ClusterPair*> heap;
         Heap(vector<vector<float>> input,int method){
             int sz = input.size();
+            this->size = sz;
             this->state = sz;
             this->d_size = input[0].size();
+            this->d_num = sz;
             this->n = sz*(sz-1)/2;
             this->heap.resize(this->n+1);
             vector<Cluster*> table;
@@ -218,6 +225,7 @@ class Heap{
             this->remove(pr->index);
             vector<float> ret = {num_a,num_b,dist,cnt};
             this->state++;
+            this->size--;
             return ret;
         }
 
@@ -234,4 +242,21 @@ class Heap{
             return ret;
         }
 
+        vector<int> getClassify(void){
+            vector<int>ret(this->d_num);
+            set<int>indexs;
+            int classify = 0;
+            for(int i = 1; i <= this->n; ++i){
+                for(int j = 0;j < 2; ++j){
+                    auto c = this->heap[i]->getCluster(j);
+                    if(indexs.count(c->id))continue;
+                    for(int k = 0;k < c->ids.size();++k){
+                        ret[c->ids[k]] = classify;
+                    }
+                    classify++;
+                    indexs.insert(c->id);
+                }
+            }
+            return ret;
+        }
 };
