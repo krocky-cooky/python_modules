@@ -57,6 +57,14 @@ struct ClusterPair{
         float ret = 1;
         if(this->method == 0){
             ret = 0;
+            int sz = this->a->average.size();
+            for(int i = 0; i < sz; ++i){
+                ret += (this->a->average[i]-this->b->average[i])*(this->a->average[i]-this->b->average[i]);
+            }
+            ret = sqrt(ret);
+            
+        }else if(this->method == 1){
+            ret = 0;
             for(int i = 0;i < this->a->n;++i){
                 for(int j = 0;j < this->b->n;++j){
                     float cnt = 0;
@@ -67,7 +75,7 @@ struct ClusterPair{
                     ret = max(ret,cnt);
                 }
             }
-        }else if(this->method == 1){
+        }else if(this->method == 2){
             ret = 1e10;
             for(int i = 0;i < this->a->n;++i){
                 for(int j = 0;j < this->b->n;++j){
@@ -79,7 +87,7 @@ struct ClusterPair{
                     ret = min(ret,cnt);
                 }
             }
-        }else if(this->method == 2){
+        }else if(this->method == 3){
             ret = 0;
             for(int i = 0;i < this->a->n;++i){
                 for(int j = 0;j < this->b->n;++j){
@@ -92,7 +100,7 @@ struct ClusterPair{
                 }
             }
             ret /= (float)(this->a->n*this->b->n);
-        }else if(this->method == 3){
+        }else if(this->method == 4){
             ret = 0;
             int sz = this->a->average.size();
             for(int i = 0; i < sz; ++i){

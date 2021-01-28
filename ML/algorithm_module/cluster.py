@@ -79,14 +79,22 @@ class Clusters:
                 distance_list.append(self.map[id_i][id_j])
         return distance_list
 
+class Centroid(Clusters):
+    def distance(self,i,j):
+        g_i = self.clusters[i].center()
+        g_j = self.clusters[j].center()
 
-class Shortest(Clusters):
+        dist = np.sum((g_i-g_j)**2)
+        dist = np.sqrt(dist)
+        return dist
+
+class Single(Clusters):
     def distance(self,i,j):
         distance_list = super().distance(i,j)
         distance_list.sort()
         return distance_list[0]
 
-class Longest(Clusters):
+class Complete(Clusters):
     def distance(self,i,j):
         distance_list = super().distance(i,j)
         distance_list.sort()
