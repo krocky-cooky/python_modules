@@ -117,16 +117,12 @@ class Heap{
     private:
         int d_size;
         int d_num;
+        int state;
        
-
     public:
         int n;
-        int state;
         int size;
-        vector<vector<float>> debug;
-        vector<float> debug2;
         vector<float>k;
-        float debug3;
         vector<ClusterPair*> heap;
         Heap(vector<vector<float>> input,int method){
             int sz = input.size();
@@ -205,8 +201,6 @@ class Heap{
             num_a = pr->a->index;
             num_b = pr->b->index;
             pr->merge(this->state);
-
-            debug = pr->a->elem;
             cnt = pr->a->n;
             for(int i =0 ;i < 2;i++){
                 auto c = pr->getCluster(i);
