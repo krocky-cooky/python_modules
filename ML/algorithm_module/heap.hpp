@@ -62,7 +62,7 @@ struct ClusterPair{
                 ret += (this->a->average[i]-this->b->average[i])*(this->a->average[i]-this->b->average[i]);
             }
             ret = sqrt(ret);
-            
+
         }else if(this->method == 1){
             ret = 0;
             for(int i = 0;i < this->a->n;++i){
@@ -239,7 +239,7 @@ class Heap{
 
 
 
-        int judge(){
+        int judge(void){
             int ret = -1;
             for(int i = this->n;i > 1;--i){
                 int j = i/2;
