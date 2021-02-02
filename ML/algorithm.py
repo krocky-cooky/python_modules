@@ -6,7 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'algorithm_module'))
 
 import matplotlib.pyplot as plt
 from functions import *
-from cluster import Shortest,Longest,Average,Ward
+from cluster import Centroid,Single,Complete,Ward,Average
 from mpl_toolkits.mplot3d import Axes3D
 import heap
 from scipy.cluster.hierarchy import dendrogram
@@ -258,12 +258,14 @@ class MultipleLinearRegression:
         return score
 
 class HierarchicClustering:
-    def __init__(self,method = 'shortest'):
+    def __init__(self,method = 'ward'):
         self.clusters = None
-        if method == 'shortest':
-            self.clusters = Shortest()
-        elif method == 'longest':
-            self.clusters = Longest()
+        if method == 'centroid':
+            self.clusters = Centroid()
+        elif method == 'single':
+            self.clusters = Single()
+        elif method == 'complete':
+            self.clusters = Complete()
         elif method == 'average':
             self.clusters = Average()
         elif method == 'ward':
@@ -288,11 +290,19 @@ class SoftmaxRegression:
         self.weight = np.zeros((i_size,o_size))
         self.bias = np.zeros(o_size)
         self.input = data
+        start = time.time()
         for i in range(self.iter):
             p = self.predict(data)
             d_weight = np.dot(self.input.T,(p-target))
             self.weight -= self.learning_rate*d_weight
-            print(self.accuracy(data,target))
+            print('iter => {}, train accuracy => {}',format(
+                i+1,
+                self.accuracy(data,target)
+            ))
+        
+        elapsed_time = time.time()-start
+        print('elapsed_time => ',elapsed_time)
+
 
     def predict(self,data):
         p = np.dot(data,self.weight) + self.bias
@@ -312,23 +322,24 @@ class SoftmaxRegression:
 class OptimizedHierarchicClustering:
     def __init__(self,method = 'ward'):
         dic = {
-            'longest' : 0,
-            'shortest' : 1,
-            'average' : 2,
-            'ward' : 3
+            'centroid' : 0,
+            'single' : 1,
+            'complete' : 2,
+            'average' : 3,
+            'ward':4
         }
         self.method = dic[method]
         self.done = False
         self.cmap = plt.get_cmap("tab10")
 
-    def fit(self,data,class_num = -1):
+    def fit(self,data,n_class = -1):
         self.data = data
         self.heap = heap.Heap(data,self.method)
         self.result = list()
         while self.heap.size > 1:
             ret = self.heap.update()
             self.result.append(ret)
-            if self.heap.size == class_num:
+            if self.heap.size == n_class:
                 self.classify = np.array(self.heap.getClassify())
                 self.done = True
                 print("got classificatin")
