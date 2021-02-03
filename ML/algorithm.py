@@ -1,13 +1,15 @@
 import numpy as np
 import math
 import sys,os
+from mpl_toolkits.mplot3d import Axes3D
+import time
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'algorithm_module'))
 
 import matplotlib.pyplot as plt
 from functions import *
 from cluster import Centroid,Single,Complete,Ward,Average
-from mpl_toolkits.mplot3d import Axes3D
+
 import heap
 from scipy.cluster.hierarchy import dendrogram
 
@@ -280,26 +282,38 @@ class HierarchicClustering:
         plt.show()
 
 class SoftmaxRegression:
-    def __init__(self,iter,learning_rate):
+    def __init__(self,iter,learning_rate,momentum = False,mu = 0):
         self.iter = iter
         self.learning_rate = learning_rate
+        self.acc_list = list()
+        self.delta_weigt = None
+        self.momentum = momentum
+        self.mu = mu
 
-    def train(self,data,target):
+    def train(self,data,target,mu = 0.1):
+        if not self.momentum:
+            mu = 0
+        self.acc_list = list()
         i_size = data.shape[1]
         o_size = target.shape[1]
         self.weight = np.zeros((i_size,o_size))
+        self.delta_weight = np.zeros_like(self.weight)
         self.bias = np.zeros(o_size)
         self.input = data
+        acc = None
         start = time.time()
         for i in range(self.iter):
             p = self.predict(data)
             d_weight = np.dot(self.input.T,(p-target))
-            self.weight -= self.learning_rate*d_weight
-            print('iter => {}, train accuracy => {}',format(
+            self.delta_weight = mu*self.delta_weight - self.learning_rate*d_weight
+            self.weight += self.delta_weight
+            pre_acc = acc
+            acc = self.accuracy(data,target)
+            self.acc_list.append(acc)
+            print('iter => {}, train accuracy => {}'.format(
                 i+1,
-                self.accuracy(data,target)
+                acc
             ))
-        
         elapsed_time = time.time()-start
         print('elapsed_time => ',elapsed_time)
 
@@ -318,6 +332,34 @@ class SoftmaxRegression:
         target = np.argmax(target,axis = 1)
         accuracy = np.sum(target == pred)/target.shape[0]
         return accuracy
+
+    def evaluation_matrix(self,data,target):
+        pred = self.predict(data)
+        n_class = target.shape[1]
+        matrix = np.zeros((n_class,n_class))
+        for i in range(data.shape[0]):
+            matrix[np.argmax(pred[i]),np.argmax(target[i])] += 1
+
+        v_sum = np.sum(matrix,axis=0)
+        h_sum = np.sum(matrix,axis=1)
+
+        precision = np.diag(matrix)/h_sum
+        recall = np.diag(matrix)/v_sum
+        F1 = 2*precision*recall/(precision + recall)
+        ret = np.array([precision,recall,F1]).T
+        return ret 
+
+    def graph(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        t = np.linspace(1,self.iter,self.iter)
+        ax.plot(t,self.acc_list)
+        ax.set_xlabel('iter')
+        ax.set_ylabel('accuracy')
+        plt.title('transition of accuracy')
+        plt.show()
+
+
 
 class OptimizedHierarchicClustering:
     def __init__(self,method = 'ward'):
