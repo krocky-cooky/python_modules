@@ -321,8 +321,11 @@ class Classification(neuralNetwork):
             batch = np.random.choice(train_size,batch_size)
             x_batch = x[batch]
             t_batch = t[batch]
+            y = self.predict(x_batch)
             losses = self.loss(y,t_batch)
-            acc = self.accuracy(x_batch,t_batch)
+            y_sub = np.argmax(y,axis=1)
+            t_sub = np.argmax(t_batch,axis=1)
+            acc = np.sum(y_sub == t_sub)/float(y.shape[0])
             self.loss_list.append(losses)
             self.acc_list.append(acc)
             if i%self.log_freq == 0:
