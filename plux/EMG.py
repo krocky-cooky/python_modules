@@ -23,7 +23,7 @@ def converteMG16bittoVAL(emg,resolution):
 
 
 
-def parse_EMG_output(file_path = TXTFILE_PATH)
+def parse_EMG_output(file_path = TXTFILE_PATH):
     #args = argparser()
     
     with open(file_path,'r') as f:
@@ -32,25 +32,57 @@ def parse_EMG_output(file_path = TXTFILE_PATH)
 
 
     emg_data = file_data[HEADER_OFFSET:-FOOTER_OFFSET]
-    data_info = json.loads(file_data[FILE_INFO_INDEX][1:])
+    header_data = json.loads(file_data[FILE_INFO_INDEX][1:])
+    #print(header_data)
+    device_name = list(header_data.keys())[0]
+    data_info = header_data[device_name]
     
-    sampling_rate = data_info['sampling rate']
+    sampling_rate = float(data_info['sampling rate'])
     column = data_info['column']
     resolution = data_info['resolution']
 
     output_data = dict()
-    for key in column:
-        output_data[key] = list()
 
-    for d in emg_data:
-        splited = d.split('\t')
-        for i,c in enumerate(column):
-            if i < 2:
-                continue
+    
+    for i,c in enumerate(column):
+        if i < 2:
+            continue
+        data_array = list()
+        for d in emg_data:
+            splited = d.split('\t') 
             emg_converted = converteMG16bittoVAL(
-                emg = splited[i],
+                emg = float(splited[i]),
                 resolution = resolution[i-2],
             )
-            output_data[c].append(emg_converted)
+            data_array.append(emg_converted)
+        
+        output_data[c] = np.array(data_array)
 
-    return output_data
+
+    return output_data,data_info
+
+
+def get_EMG_RMS(
+    file_path = TXTFILE_PATH,
+    range_ms = 100
+):
+    output_data,data_info = parse_EMG_output(file_path)
+    keys = output_data.keys()
+    RMS_data = dict()
+
+    sampling_rate = data_info['sampling rate']
+    range_frame = int(range_ms*sampling_rate / 1000)
+    conv_base = np.ones(range_frame) / range_frame
+
+    for key in keys:
+        arr = output_data[key]
+        val_square = arr*arr
+        RMS_output = np.sqrt(np.convolve(
+            val_square,
+            conv_base,
+            mode = "same"
+            ))
+        RMS_data[key] = RMS_output
+
+    return RMS_data
+    
