@@ -1,11 +1,14 @@
 import os,sys 
+sys.path.append(os.path.dirname(__file__))
+
 import matplotlib.pyplot as plt 
 import numpy as np 
 
 
 def visualize_pulse(
     data,
-    len_col = 1000
+    len_col = 1000,
+    ylim = None
 ):
     start = 0
     end = 1000
@@ -15,8 +18,14 @@ def visualize_pulse(
         ncol += 1
     fig = plt.figure(figsize=(10,5*ncol))
     index = 0
-    ymin = np.min(d)
-    ymax = np.max(d)
+
+    
+    if ylim == None:
+        ymin = np.min(d)
+        ymax = np.max(d)
+    else:
+        ymin,ymax = ylim
+
     range_data = ymax-ymin
 
     while True:

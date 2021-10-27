@@ -1,4 +1,6 @@
 import os,sys
+sys.path.append(os.path.dirname(__file__))
+
 import numpy as np 
 import matplotlib.pyplot as plt
 import argparse
@@ -64,7 +66,8 @@ def parse_EMG_output(file_path = TXTFILE_PATH):
 
 def get_EMG_RMS(
     file_path = TXTFILE_PATH,
-    range_ms = 100
+    range_ms = 100,
+    smoothing_mode = "same"
 ):
     output_data,data_info = parse_EMG_output(file_path)
     keys = output_data.keys()
@@ -80,7 +83,7 @@ def get_EMG_RMS(
         RMS_output = np.sqrt(np.convolve(
             val_square,
             conv_base,
-            mode = "same"
+            mode = smoothing_mode
             ))
         RMS_data[key] = RMS_output
 
