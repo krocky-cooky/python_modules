@@ -22,6 +22,19 @@ from general import PluxData
 
 
 def parse_EMG_output(file_path = TXTFILE_PATH):
+    """
+    params
+    -----
+    file_path: str
+        the path of the text file bioSignalPlux generated
+
+    Returns
+    -----
+    ret: dict
+        the raw data of EMG
+    data_info: dict
+        data infomation contained in the text file 
+    """
     data = PluxData(file_path)
     ret = dict()
     for key,val in data.get_data().items():
@@ -37,6 +50,25 @@ def get_EMG_RMS(
     range_ms = 100,
     smoothing_mode = "same"
 ):
+    """
+    params
+    -----
+    file_path: str
+        the path of the text file bioSignalPlux generated
+    
+    range_ms: int
+        smoothing range
+        default: 100
+
+    smoothing_mode: str 
+        smoothing mode of np.convolve
+        default:  'same'
+
+    Returns
+    -----
+    EMG_RMS: dict
+        the data processed to RMS
+    """
     data = PluxData(file_path)
     ret = data.get_EMG_RMS(
         range_ms = range_ms,

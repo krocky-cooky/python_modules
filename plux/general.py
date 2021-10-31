@@ -12,6 +12,35 @@ from utils.funcs import convertEMG16bittoVAL
 
 
 class PluxData(object):
+    """
+    Attributes
+    -----
+    device_name: str
+        the name of bioSignalPlux device
+
+    data_info: dict
+        the row infomation dictionary of the data
+
+    sampling_rate: int
+        sampling rate 
+
+    labels: list
+        list of the name of the channel labels
+        eg) ['CH1' , 'CH2'] 
+
+    sensors: list 
+        list of the each sensor name
+
+    resolutons: list
+        list of each sensors' resolution
+
+    result_data: ndarray
+        ndarray of the row data got from the text data
+    
+    data: dict 
+        dictionary of the processed data
+    """
+
     def __init__(self,file_path):
         self.file_path = file_path
 
@@ -42,6 +71,16 @@ class PluxData(object):
 
         
     def get_data(self):
+        """
+        params
+        -----
+        None
+
+        Returns 
+        -----
+        data: dict
+            processed data
+        """
         return self.data
 
     def get_EMG_RMS(
@@ -49,6 +88,22 @@ class PluxData(object):
         range_ms = 100,
         smoothing_mode = 'same'
     ):
+        """
+        params
+        -----
+        range_ms: int
+            smoothing range
+            default: 100
+
+        smoothing_mode: str 
+            smoothing mode of np.convolve
+            default:  'same'
+
+        Returns
+        -----
+        EMG_RMS: dict
+            the data processed to RMS
+        """
         self.EMG_RMS = dict()
         range_frame = int(range_ms*self.sampling_rate / 1000)
         conv_base = np.ones(range_frame) / range_frame
