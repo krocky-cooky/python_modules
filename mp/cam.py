@@ -6,14 +6,19 @@ import mediapipe as mp
 import cv2
 
 
-def cam_pose():
+def cam_pose(
+    min_detection_confidence = 0.7,
+    min_tracking_confidence = 0.5
+):
     mp_pose = mp.solutions.pose
     pose = mp_pose.Pose(
-        min_detection_confidence = 0.7,
-        min_tracking_confidence = 0.5
+        min_detection_confidence = min_detection_confidence,
+        min_tracking_confidence = min_tracking_confidence
     )
 
     capture = cv2.VideoCapture(0)
+
+    cv2.namedWindow('result',cv2.WINDOW_NORMAL)
 
 
     while True:
@@ -35,14 +40,19 @@ def cam_pose():
     capture.release()
     cv2.destroyAllWindows()
 
-def cam_hands():
+def cam_hands(
+    min_detection_confidence = 0.7,
+    min_tracking_confidence = 0.5
+):
     mp_hands = mp.solutions.hands
     hands = mp_hands.Hands(
-        min_detection_confidence = 0.7,
-        min_tracking_confidence = 0.5
+        min_detection_confidence = min_detection_confidence,
+        min_tracking_confidence = min_tracking_confidence
     )
 
     capture = cv2.VideoCapture(0)
+
+    cv2.namedWindow('result',cv2.WINDOW_NORMAL)
 
     while True:
         ret,frame = capture.read()
