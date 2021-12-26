@@ -47,7 +47,10 @@ class PluxData(object):
         with open(file_path,'r') as f:
             txt = f.read()
             file_data = txt.split('\n')
-
+        
+        if not 'OpenSignals' in file_data[0]:
+            raise Exception('OpenSignalsにより生成されたデータではありません')
+            
         data_section = file_data[HEADER_OFFSET:-FOOTER_OFFSET]
         header_data = json.loads(file_data[FILE_INFO_INDEX][1:])
         self.device_name = list(header_data.keys())[0]
