@@ -82,7 +82,6 @@ def get_EMG_raw(
     """
     params
     -----
-   
 
     Returns
     -----
@@ -90,7 +89,7 @@ def get_EMG_raw(
         the raw data of EMG
     """
     data = PluxData(file_path)
-    ret = data.get_EMG_RMS()
+    ret = data.get_EMG_raw()
     return ret 
 
 

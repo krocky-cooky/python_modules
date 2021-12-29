@@ -12,7 +12,7 @@ def plot_on_condition(
     rollover = ['上肢先行','下肢先行','膝立','横向き上肢先行','横向き下肢先行'],
     channel = ['CH1','CH2','CH3','CH4'],
     is_raw = False,
-    ylim = [0,0.15]
+    ymax = 0.15
 ):
     df = pd.read_csv(csv_file)
     df_extracted = df[
@@ -35,7 +35,10 @@ def plot_on_condition(
         data = data[row['チャンネル']]
         ax = plt.subplot2grid((ncol,1),(i,0))
         ax.plot(data)
-        ax.set_ylim(*ylim)
+        if is_raw:
+            ax.set_ylim(-ymax,ymax)
+        else:
+            ax.set_ylim(0,ymax)
         title = '{}/{}/{}/{}/{}回目/最大値:{}'.format(
             row['筋電'],
             row['枕形状'],
