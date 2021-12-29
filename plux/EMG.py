@@ -76,4 +76,22 @@ def get_EMG_RMS(
         )
     return ret 
 
+def get_EMG_raw(
+    file_path = TXTFILE_PATH
+):
+    """
+    params
+    -----
+   
+
+    Returns
+    -----
+    EMG_RMS: dict
+        the raw data of EMG
+    """
+    data = PluxData(file_path)
+    ret = data.get_EMG_RMS()
+    return ret 
+
+
 

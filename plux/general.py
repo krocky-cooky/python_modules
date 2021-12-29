@@ -125,7 +125,27 @@ class PluxData(object):
             self.EMG_RMS[label] = RMS_output 
 
         return self.EMG_RMS 
-            
+
+    def get_EMG_raw(self):
+        """
+        params
+        -----
+
+        Returns
+        -----
+        EMG_raw: dict
+            the raw data of EMG
+        """
+        self.EMG_raw = dict()
+        
+        for label,dic in self.data.items():
+            if dic['sensor'] != 'EMG':
+                continue 
+
+            arr = dic['data']
+            self.EMG_raw[label] = arr 
+
+        return self.EMG_raw 
             
 
 
