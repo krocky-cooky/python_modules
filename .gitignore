@@ -3,5 +3,5 @@ logs/
 json_logs/
 __pycache__/
 build/
-*.egg-info/
+python_modules.egg-info/
 *.pyc
