@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import json 
 import re 
 
-
 from utils.parameter import HEADER_OFFSET,FOOTER_OFFSET,FILE_INFO_INDEX
 from utils.funcs import convertEMG16bittoVAL
 
@@ -60,7 +59,7 @@ class PluxData(object):
         self.sensors = self.data_info['sensor']
         self.resolutions = self.data_info['resolution']
         num_col = len(self.labels)
-        self.result_data = np.array('\t'.join(data_section).split(),dtype = np.float).reshape((-1,num_col+2)).T[2:]
+        self.result_data = np.array('\t'.join(data_section).split(),dtype = np.float32).reshape((-1,num_col+2)).T[2:]
         self.data = dict()
         
         for label,sensor,resolution,arr in zip(self.labels,self.sensors,self.resolutions,self.result_data):
