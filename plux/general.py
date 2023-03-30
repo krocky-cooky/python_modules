@@ -10,6 +10,7 @@ from utils.parameter import HEADER_OFFSET,FOOTER_OFFSET,FILE_INFO_INDEX
 from utils.funcs import convertEMG16bittoVAL
 
 
+
 class PluxData(object):
     """
     Attributes
@@ -88,7 +89,8 @@ class PluxData(object):
     def get_EMG_RMS(
         self,
         range_ms = 100,
-        smoothing_mode = 'same'
+        smoothing_mode = 'same',
+        filt = None
     ):
         """
         params
@@ -115,6 +117,8 @@ class PluxData(object):
                 continue 
 
             arr = dic['data']
+            if filt is not None:
+                arr = filt(arr)
             val_square = arr*arr 
             RMS_output = np.sqrt(np.convolve(
                 val_square,
