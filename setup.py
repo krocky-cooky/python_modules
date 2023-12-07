@@ -5,7 +5,7 @@ def _require_from_file(file):
 
 setup(
     name='python_modules',
-    version='0.1',
+    version='0.2',
     url='https://github.com/krocky-cooky/python_modules',
     author='krocky-cooky',
     packages = find_packages()

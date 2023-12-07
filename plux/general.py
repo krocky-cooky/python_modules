@@ -70,7 +70,8 @@ class PluxData(object):
             if sensor == 'EMG':
                 self.data[label]['data'] = np.array(list(map(convertEMG16bittoVAL,arr,[resolution for i in range(arr.shape[0])])))
             else:
-                raise Exception('invalid sensor type')
+                # raise Exception('invalid sensor type')
+                continue
 
         
     def get_data(self):
